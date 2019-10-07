@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BallProjectile.generated.h"
 
+class UDamageType;
 UCLASS(config=Game)
 class ASBallProjectile : public AActor
 {
@@ -26,9 +27,17 @@ public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	void ApplyPointDamage();
+
 	/** Returns CollisionComp subobject **/
 	FORCEINLINE class USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/
 	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+	
+	float BaseDamage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapons")
+	TSubclassOf<UDamageType>DamageType;
+
 };
 

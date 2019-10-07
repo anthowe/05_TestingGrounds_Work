@@ -9,8 +9,11 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
+#include "Engine/World.h"
 #include "Animation/AnimInstance.h"
 #include "GameFramework/Controller.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AGun::AGun()
@@ -59,6 +62,28 @@ void AGun::OnFire()
 
 			// spawn the projectile at the muzzle
 			World->SpawnActor<ASBallProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+
+			
+			FVector EyeLocation;
+			FVector ShotDirection = SpawnRotation.Vector();
+			FVector TraceEnd = SpawnLocation + (ShotDirection * 1000);
+			FHitResult Hit;
+
+			FCollisionQueryParams QueryParams;
+			QueryParams.AddIgnoredActor(this);
+			QueryParams.bTraceComplex = true;
+			QueryParams.bReturnPhysicalMaterial = true;
+
+			DrawDebugLine(GetWorld(), SpawnLocation, TraceEnd, FColor::Red, 1, 1.f, 0, 1.f);
+			if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECollisionChannel::ECC_EngineTraceChannel3, QueryParams))
+			{
+				float BaseDamage = 20.f;
+				AActor* HitActor = Hit.GetActor();
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+				UGameplayStatics::ApplyPointDamage(Hit.GetActor(), BaseDamage, SpawnLocation, Hit, this->GetInstigatorController(), this, DamageType);
+				UE_LOG(LogTemp, Warning, TEXT("DONKEY: Damage applied: %f"), BaseDamage);
+			}
+		
 	
 		}
 	}
@@ -86,5 +111,3 @@ void AGun::SetupPlayerInputComponent(UInputComponent* InputComponent)
 	
 	
 }
-
-

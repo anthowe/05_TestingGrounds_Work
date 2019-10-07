@@ -3,6 +3,7 @@
 #include "BallProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ASBallProjectile::ASBallProjectile() 
 {
@@ -29,15 +30,44 @@ ASBallProjectile::ASBallProjectile()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+
+	BaseDamage = 20.f;
 }
 
-void ASBallProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ASBallProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Mannequin, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+
+
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	if ((Mannequin != NULL) && (Mannequin != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
 		Destroy();
 	}
+
+	ApplyPointDamage();
+
 }
+
+void ASBallProjectile::ApplyPointDamage()
+{
+	AActor* Mannequin = GetOwner();
+	if (Mannequin)
+	{
+		float ActualDamage = BaseDamage;
+		FHitResult Hit;
+		FVector EyeLocation;
+		FRotator EyeRotation;
+		FVector ShotDirection = EyeRotation.Vector();
+		UGameplayStatics::ApplyPointDamage(Mannequin, BaseDamage, ShotDirection, Hit, this->GetInstigatorController(), this, DamageType);
+		UE_LOG(LogTemp, Warning, TEXT("DONKEY1: Damaged applied: %f"), BaseDamage);
+
+		if (ActualDamage == 0)
+		{
+			Destroy(Mannequin);
+		}
+
+	}
+}
+

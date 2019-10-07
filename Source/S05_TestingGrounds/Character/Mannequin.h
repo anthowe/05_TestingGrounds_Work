@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
 #include "Mannequin.generated.h"
+
+class USHealthComponent;
 
 UCLASS()
 class S05_TESTINGGROUNDS_API AMannequin : public ACharacter
@@ -36,6 +39,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category ="Weapon")
 	void PullTrigger();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
+	float DefaultHealth;
+
+	UFUNCTION()
+	void OnHealthChanged(USHealthComponent* OwningHealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
+	bool bDied;
 private:
 	
 	UPROPERTY(VisibleAnywhere,  Category = "Setup")

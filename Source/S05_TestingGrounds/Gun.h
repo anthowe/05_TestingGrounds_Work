@@ -6,7 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
 
-
+class UParticleSystem;
+class UDamageType;
 
 
 UCLASS()
@@ -90,6 +91,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category ="Input")
 	void OnFire();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+	UParticleSystem* ParticleSystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	TSubclassOf <UDamageType> DamageType;
+	
 	///** Returns Mesh1P subobject **/
 	//FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 };

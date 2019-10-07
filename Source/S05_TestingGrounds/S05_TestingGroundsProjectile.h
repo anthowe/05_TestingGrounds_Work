@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "S05_TestingGroundsProjectile.generated.h"
 
+
+
 UCLASS(config=Game)
 class AS05_TestingGroundsProjectile : public AActor
 {
@@ -30,5 +32,7 @@ public:
 	FORCEINLINE class USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/
 	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+
+	
 };
 

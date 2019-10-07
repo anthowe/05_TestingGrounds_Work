@@ -2,9 +2,11 @@
 
 #include "Mannequin.h"
 #include "Gun.h"
+#include "Weapons/BallProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "SHealthComponent.h"
 #include "Components/InputComponent.h"
 
 
@@ -29,6 +31,8 @@ AMannequin::AMannequin()
 	Mesh1P->CastShadow = false;
 	Mesh1P->RelativeRotation = FRotator(1.9f, -19.19f, 5.2f);
 	Mesh1P->RelativeLocation = FVector(-0.5f, -4.4f, -155.7f);
+
+	DefaultHealth = 200.f;
 }
 
 // Called when the game starts or when spawned
@@ -92,4 +96,17 @@ void AMannequin::UnPossessed()
 void AMannequin::PullTrigger()
 {
 	Gun->OnFire();
+
+	ASBallProjectile* Projectile = Cast<ASBallProjectile>(GetOwner());
+	if (Projectile)
+	{
+		Projectile->ApplyPointDamage();
+	}
+	
+}
+
+void AMannequin::OnHealthChanged(USHealthComponent * OwningHealthComponent, float Health, float HealthDelta, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
+{
+
+
 }

@@ -4,6 +4,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 
+
 AS05_TestingGroundsProjectile::AS05_TestingGroundsProjectile() 
 {
 	// Use a sphere as a simple collision representation
@@ -29,6 +30,7 @@ AS05_TestingGroundsProjectile::AS05_TestingGroundsProjectile()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+
 }
 
 void AS05_TestingGroundsProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -40,4 +42,7 @@ void AS05_TestingGroundsProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* 
 
 		Destroy();
 	}
+
+	
+	
 }
