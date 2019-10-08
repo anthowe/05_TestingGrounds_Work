@@ -74,15 +74,15 @@ void AGun::OnFire()
 			QueryParams.bTraceComplex = true;
 			QueryParams.bReturnPhysicalMaterial = true;
 
-			DrawDebugLine(GetWorld(), SpawnLocation, TraceEnd, FColor::Red, 1, 1.f, 0, 1.f);
-			if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECollisionChannel::ECC_EngineTraceChannel3, QueryParams))
+			//DrawDebugLine(GetWorld(), SpawnLocation, TraceEnd, FColor::Red, 1, 1.f, 0, 1.f);
+			/*if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECollisionChannel::ECC_EngineTraceChannel3, QueryParams))
 			{
 				float BaseDamage = 20.f;
 				AActor* HitActor = Hit.GetActor();
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 				UGameplayStatics::ApplyPointDamage(Hit.GetActor(), BaseDamage, SpawnLocation, Hit, this->GetInstigatorController(), this, DamageType);
 				UE_LOG(LogTemp, Warning, TEXT("DONKEY: Damage applied: %f"), BaseDamage);
-			}
+			}*/
 		
 	
 		}

@@ -1,9 +1,14 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "BallProjectile.h"
+#include "Gun.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "DrawDebugHelpers.h"
+#include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 ASBallProjectile::ASBallProjectile() 
 {
@@ -19,6 +24,9 @@ ASBallProjectile::ASBallProjectile()
 
 	// Set as root component
 	RootComponent = CollisionComp;
+
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMesh->SetupAttachment(CollisionComp);
 
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
@@ -36,38 +44,51 @@ ASBallProjectile::ASBallProjectile()
 
 void ASBallProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Mannequin, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-
-
+	
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((Mannequin != NULL) && (Mannequin != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("DONKEY1: AddImpulse"));
+
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
-		Destroy();
+		//Destroy();
+	
+			const FVector SpawnLocation = StaticMesh->GetComponentLocation();
+			const FRotator SpawnRotation = StaticMesh->GetComponentRotation();
+
+			float ActualDamage = BaseDamage;
+			FHitResult HitResult;
+			/*FVector EyeLocation;
+			FRotator EyeRotation;*/
+			FVector ShotDirection = SpawnRotation.Vector();
+			FVector TraceEnd = SpawnLocation + (ShotDirection * 10000);
+
+			FCollisionQueryParams QueryParams;
+			QueryParams.AddIgnoredActor(this);
+			QueryParams.bTraceComplex = true;
+			QueryParams.bReturnPhysicalMaterial = true;
+
+
+
+			if (GetWorld()->LineTraceSingleByChannel(HitResult, SpawnLocation, TraceEnd, ECC_EngineTraceChannel3, QueryParams))
+			{
+				DrawDebugLine(GetWorld(), SpawnLocation, TraceEnd, FColor::Red, 1, 1.f, 0, 1.f);
+				UGameplayStatics::ApplyPointDamage(Mannequin, BaseDamage, ShotDirection, HitResult, GetInstigatorController(), this, DamageType);
+				UE_LOG(LogTemp, Warning, TEXT("DONKEY1: Damaged applied: %f"), BaseDamage);
+
+			}
+		
+		
+
+		
+
+
+		
 	}
 
-	ApplyPointDamage();
+	
 
 }
 
-void ASBallProjectile::ApplyPointDamage()
-{
-	AActor* Mannequin = GetOwner();
-	if (Mannequin)
-	{
-		float ActualDamage = BaseDamage;
-		FHitResult Hit;
-		FVector EyeLocation;
-		FRotator EyeRotation;
-		FVector ShotDirection = EyeRotation.Vector();
-		UGameplayStatics::ApplyPointDamage(Mannequin, BaseDamage, ShotDirection, Hit, this->GetInstigatorController(), this, DamageType);
-		UE_LOG(LogTemp, Warning, TEXT("DONKEY1: Damaged applied: %f"), BaseDamage);
-
-		if (ActualDamage == 0)
-		{
-			Destroy(Mannequin);
-		}
-
-	}
-}
 

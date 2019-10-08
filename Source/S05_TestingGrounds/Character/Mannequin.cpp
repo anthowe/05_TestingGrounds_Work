@@ -97,11 +97,7 @@ void AMannequin::PullTrigger()
 {
 	Gun->OnFire();
 
-	ASBallProjectile* Projectile = Cast<ASBallProjectile>(GetOwner());
-	if (Projectile)
-	{
-		Projectile->ApplyPointDamage();
-	}
+	
 	
 }
 
